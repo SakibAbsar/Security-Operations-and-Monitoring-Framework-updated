@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Environment Monitor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Environment Monitor Dashboard</h1>
+    <div id="current">
+        <p>Temperature: <span id="temp">-</span>°C</p>
+        <p>Humidity: <span id="hum">-</span>%</p>
+        <div id="alert" style="color:red; display:none;">ALERT! Threshold Exceeded!</div>
+    </div>
+    <canvas id="chart" width="400" height="200"></canvas>
+
+    <script>
+        const socket = io();
+        const ctx = document.getElementById('chart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Temperature',
+                    data: [],
+                    borderColor: 'rgb(255, 99, 132)'
+                }, {
+                    label: 'Humidity',
+                    data: [],
+                    borderColor: 'rgb(54, 162, 235)'
+                }]
+            }
+        });
+
+        socket.on('update', function(data) {
+            document.getElementById('temp').textContent = data.temperature;
+            document.getElementById('hum').textContent = data.humidity;
+            
+            chart.data.labels.push(new Date().toLocaleTimeString());
+            chart.data.datasets[0].data.push(data.temperature);
+            chart.data.datasets[1].data.push(data.humidity);
+            chart.update();
+        });
+
+        socket.on('alert', function(data) {
+            document.getElementById('alert').style.display = 'block';
+            // Hide alert after 10 seconds
+            setTimeout(() => {
+                document.getElementById('alert').style.display = 'none';
+            }, 10000);
+        });
+    </script>
+</body>
+</html>
