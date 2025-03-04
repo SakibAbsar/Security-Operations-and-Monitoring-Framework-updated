@@ -27,5 +27,3 @@ This project demonstrates a portable IoT-enabled safety device using a Raspberry
 
 ## 6. Conclusion & Future Work
 This system proves the viability of low-cost IoT solutions for environmental monitoring. Future enhancements include TLS for MQTT, OTA updates, and additional sensors.
-
-## 7. References
